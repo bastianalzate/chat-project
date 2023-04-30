@@ -18,6 +18,6 @@ const firebaseConfig = {
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   
-  const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+  const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
   
   export { db, messagesQuery };
