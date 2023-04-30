@@ -24,36 +24,15 @@ const io = socketIO(server, {
   }
 });
 
-// Agregar middleware de autenticación para Socket.IO
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (token) {
-    admin.auth().verifyIdToken(token)
-      .then(decodedToken => {
-        socket.uid = decodedToken.uid;
-        next();
-      })
-      .catch(error => {
-        console.log('Error de autenticación:', error);
-        next(new Error('Error de autenticación'));
-      });
-  } else {
-    console.log('Token de acceso no proporcionado');
-    next(new Error('Token de acceso no proporcionado'));
-  }
-});
-
 io.on('connection', socket => {
   console.log('Usuario conectado');
 
   socket.on('message', message => {
     console.log('Mensaje recibido:', message);
-    // Guardar mensaje en Firestore en nombre del usuario autenticado
-    const uid = socket.uid;
-    const userRef = db.collection('users').doc(uid);
-    const messageRef = userRef.collection('messages').doc();
+    // Guardar mensaje en Firestore
+    const messageRef = db.collection('messages').doc();
     messageRef.set({
-      message: message.message,
+      message: message.text,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     })
       .then(() => {
