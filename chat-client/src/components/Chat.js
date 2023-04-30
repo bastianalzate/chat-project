@@ -18,7 +18,8 @@ function Chat() {
 
     // Enviar mensaje al servidor Node.js utilizando Socket.IO
     const newMessage = {
-      id: Date.now(),
+      senderId: "c81o7aghbVaZLBIDFjL2",
+      timestamp: Date.now(),
       text: message
     };
     socket.emit('message', newMessage);
