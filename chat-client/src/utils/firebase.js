@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, query, orderBy } from "firebase/firestore";
+
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
@@ -13,12 +14,10 @@ const firebaseConfig = {
     appId: process.env.REACT_APP_FIREBASE_APP_ID
   };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 
-
-// Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore(app);
-
-
-export default db;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+  
+  export { db, messagesQuery };
