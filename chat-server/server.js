@@ -27,10 +27,16 @@ io.on('connection', socket => {
 
   socket.on('message', message => {
     console.log('Mensaje recibido:', message);
-    // Guardar mensaje en Firestore
-    db.collection('messages').doc(message.id).set(message);
-    // Emitir mensaje a todos los clientes conectados
-    io.emit('message', message);
+    // Guardar mensaje en un nuevo documento de Firestore
+    db.collection('messages').add(message)
+      .then(docRef => {
+        console.log('Documento guardado con ID:', docRef.id);
+        // Emitir mensaje a todos los clientes conectados
+        io.emit('message', message);
+      })
+      .catch(error => {
+        console.log('Error al guardar el documento:', error);
+      });
   });
 
   socket.on('disconnect', () => {
