@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const admin = require('firebase-admin');
+const cors = require('cors');
 
 // Configurar Firebase Admin SDK
 const serviceAccount = require('./serviceAccountKey.json');
@@ -15,7 +16,12 @@ const app = express();
 const server = http.createServer(app);
 
 // Configurar Socket.IO para comunicación en tiempo real
-const io = socketIO(server);
+const io = socketIO(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST']
+  }
+});
 io.on('connection', socket => {
   console.log('Usuario conectado');
 
@@ -31,6 +37,9 @@ io.on('connection', socket => {
     console.log('Usuario desconectado');
   });
 });
+
+// Permitir solicitudes CORS desde el cliente React
+app.use(cors({ origin: 'http://localhost:3000' }));
 
 // Iniciar servidor HTTP
 const port = 5000;
