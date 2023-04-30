@@ -32,6 +32,7 @@ io.on('connection', socket => {
     // Guardar mensaje en Firestore
     const messageRef = db.collection('messages').doc();
     messageRef.set({
+      senderId: message.senderId,
       message: message.text,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     })
