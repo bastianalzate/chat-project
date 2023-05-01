@@ -1,7 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { auth, provider, signInWithPopup } from "../utils/firebase";  
 
 function Login() {
+    const signInWithGoogle = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                console.log(result.user);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+    
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="max-w-md w-full mx-auto p-4 md:p-8 bg-white shadow-lg rounded-lg">
@@ -71,6 +82,7 @@ function Login() {
                         <button
                             type="button"
                             className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            onClick={signInWithGoogle}
                         >
                             <span className="sr-only">Iniciar sesión con Google</span>
                             <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
