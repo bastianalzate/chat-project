@@ -33,7 +33,7 @@ io.on('connection', socket => {
     const messageRef = db.collection('messages').doc();
     messageRef.set({
       senderId: message.senderId,
-      message: message.text,
+      message: message.message,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     })
       .then(() => {
