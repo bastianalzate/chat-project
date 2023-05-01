@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { auth, provider, signInWithPopup } from "../utils/firebase";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 function SignUp() {
     const db = getFirestore();
@@ -10,6 +10,13 @@ function SignUp() {
             const { user } = await signInWithPopup(auth, provider);
             
             if (user) {
+                const q = query(collection(db, "users"), where("email", "==", user.email));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    console.log("El email ya está en uso.");
+                    return;
+                }
+                
                 const userRef = doc(db, 'users', user.uid);
                 
                 setDoc(userRef, {
