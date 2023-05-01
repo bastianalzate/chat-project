@@ -7,7 +7,7 @@ function Login() {
             <div className="max-w-md w-full mx-auto p-4 md:p-8 bg-white shadow-lg rounded-lg">
                 <div className="text-center">
                     <h2 className="text-3xl font-extrabold text-gray-900">
-                        Login
+                        Iniciar sesión
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
                         ¿No tienes una cuenta?
