@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, query, orderBy } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword  } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
@@ -24,4 +24,4 @@ const provider = new GoogleAuthProvider();
 // Query for messages
 const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
-export { db, auth, provider, messagesQuery, signInWithPopup, createUserWithEmailAndPassword };
+export { db, auth, provider, messagesQuery, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword };
