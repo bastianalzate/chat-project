@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, query, orderBy } from "firebase/firestore";
+import { getFirestore, collection, query, orderBy, limit } from "firebase/firestore";
 
 
 // TODO: Replace the following with your app's Firebase project configuration

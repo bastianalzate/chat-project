@@ -50,7 +50,7 @@ function Chat() {
       <div className="bg-white py-2 px-4 shadow">
         <h1 className="text-xl font-bold">Chat con Juan Pérez</h1>
       </div>
-      <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-7rem)]">
+      <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map(message => (
           <div key={message.id} className="bg-white rounded-lg shadow p-4 mb-4">
             <p className="font-bold">{message.senderId}</p>
@@ -60,7 +60,7 @@ function Chat() {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSend} className="bg-white py-4 px-4 shadow">
+      <form onSubmit={handleSend} className="bg-white py-5 px-4 shadow">
         <div className="flex items-center">
           <input
             value={message}
