@@ -1,14 +1,19 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { auth, provider, signInWithPopup } from "../utils/firebase";
+import { auth, provider, signInWithPopup, createUserWithEmailAndPassword } from "../utils/firebase";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+
 
 function SignUp() {
     const db = getFirestore();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
 
     const handleGoogleSignUp = async () => {
         try {
             const { user } = await signInWithPopup(auth, provider);
-            
+
             if (user) {
                 const q = query(collection(db, "users"), where("email", "==", user.email));
                 const querySnapshot = await getDocs(q);
@@ -16,9 +21,9 @@ function SignUp() {
                     console.log("El email ya está en uso.");
                     return;
                 }
-                
+
                 const userRef = doc(db, 'users', user.uid);
-                
+
                 setDoc(userRef, {
                     name: user.displayName,
                     email: user.email,
@@ -27,6 +32,34 @@ function SignUp() {
             }
         } catch (error) {
             console.error("Error al iniciar sesión con Google: ", error);
+        }
+    };
+
+    const handleSignUp = async (event) => {
+        event.preventDefault();
+
+        try {
+            const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+            if (user) {
+                const q = query(collection(db, "users"), where("email", "==", user.email));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    console.log("El email ya está en uso.");
+                    return;
+                }
+
+                const userRef = doc(db, 'users', user.uid);
+
+                setDoc(userRef, {
+                    name: name,
+                    email: user.email,
+                    createdAt: new Date(),
+                }, { merge: true });
+            }
+
+        } catch (error) {
+            console.error("Error al registrar el usuario: ", error);
         }
     };
 
@@ -42,7 +75,7 @@ function SignUp() {
                         </Link>
                     </p>
                 </div>
-                <form className="mt-8 space-y-6">
+                <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
                     <div>
                         <label htmlFor="name" className="block text-gray-700 font-medium">
                             Nombre completo
@@ -55,6 +88,8 @@ function SignUp() {
                                 autoComplete="name"
                                 required
                                 className="py-2 px-3 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm"
+                                value={name}
+                                onChange={(event) => setName(event.target.value)}
                             />
                         </div>
                     </div>
@@ -71,6 +106,8 @@ function SignUp() {
                                 autoComplete="email"
                                 required
                                 className="py-2 px-3 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm"
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                             />
                         </div>
                     </div>
@@ -87,6 +124,8 @@ function SignUp() {
                                 autoComplete="new-password"
                                 required
                                 className="py-2 px-3 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
                             />
                         </div>
                     </div>
