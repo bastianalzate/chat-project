@@ -65,11 +65,14 @@ function Chat() {
       </div>
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map(message => (
-          <div key={message.id} className="bg-white rounded-lg shadow p-4 mb-4">
-            <p className="font-bold">{message.senderId}</p>
-            <p className="text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
-            <p className="mt-2">{message.message}</p>
-          </div>
+          message.senderId === user.uid &&
+           (
+            <div key={message.id} className="bg-white rounded-lg shadow p-4 mb-4">
+              <p className="font-bold">{message.senderId}</p>
+              <p className="text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+              <p className="mt-2">{message.message}</p>
+            </div>
+          )
         ))}
         <div ref={messagesEndRef} />
       </div>
