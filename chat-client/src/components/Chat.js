@@ -1,16 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { db, messagesQuery } from '../utils/firebase';
 import { onSnapshot } from 'firebase/firestore';
 import socket from '../utils/socket';
+import { UserContext } from '../context/UserContext';
+import { useHistory } from 'react-router-dom';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const { user, logout } = useContext(UserContext);
+  const navigate = useHistory();
+
+  console.log(user, "dashboard user")
 
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const handleLogout = () => {
+    logout();
+    navigate.push('/');
+
   }
 
   useEffect(() => {
@@ -37,7 +49,7 @@ function Chat() {
     e.preventDefault();
 
     const newMessage = {
-      senderId: "c81o7aghbVaZLBIDFjL2",
+      senderId: user.uid,
       timestamp: "",
       message: message
     };
@@ -47,8 +59,9 @@ function Chat() {
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
-      <div className="bg-white py-2 px-4 shadow">
+      <div className="bg-white py-2 px-4 shadow flex items-center justify-between">
         <h1 className="text-xl font-bold">Chat con Juan Pérez</h1>
+        <button onClick={handleLogout}>Logout</button>
       </div>
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map(message => (
