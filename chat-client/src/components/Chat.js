@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { db, messagesQuery } from '../utils/firebase';
-import { onSnapshot } from 'firebase/firestore';
+import { db } from '../utils/firebase';
+import { query, where, collection, onSnapshot } from 'firebase/firestore';
 import socket from '../utils/socket';
 import { UserContext } from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
@@ -29,22 +29,22 @@ function Chat({ userSelect }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(messagesQuery, snapshot => {
-      const loadedMessages = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          message: data.message,
-          senderId: data.senderId,
-          timestamp: data.timestamp.toDate(),
-        };
+    const conversationRef = onSnapshot(query(collection(db, 'conversations'), where('users', 'array-contains', user.uid), where('users', 'array-contains', userSelect.uid)), snapshot => 
+      {
+        if (snapshot.empty) {
+          setMessages([]);
+        } else {
+          const conversation = snapshot.docs[0].data();
+          setMessages(conversation.messages);
+        }
       });
+  
+  
+    return () => {
+      conversationRef();
+    };
+  }, [user, userSelect]);
 
-      setMessages(loadedMessages);
-    });
-
-    return unsubscribe;
-  }, []);
 
   useEffect(scrollToBottom, [messages]);
 
@@ -53,6 +53,7 @@ function Chat({ userSelect }) {
 
     const newMessage = {
       senderId: user.uid,
+      receiverId: userSelect.uid,
       timestamp: "",
       message: message
     };
@@ -69,7 +70,7 @@ function Chat({ userSelect }) {
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map(message => (
           message.senderId === user.uid &&
-           (
+          (
             <div key={message.id} className="bg-white rounded-lg shadow px-4 mb-4">
               <p className="font-bold">{message.senderId}</p>
               <p className="text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
@@ -96,4 +97,5 @@ function Chat({ userSelect }) {
 }
 
 export default Chat;
+
 

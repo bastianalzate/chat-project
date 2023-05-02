@@ -27,23 +27,63 @@ const io = socketIO(server, {
 io.on('connection', socket => {
   console.log('Usuario conectado');
 
-  socket.on('message', message => {
+  socket.on('message', async message => {
     console.log('Mensaje recibido:', message);
-    // Guardar mensaje en Firestore
-    const messageRef = db.collection('messages').doc();
-    messageRef.set({
-      senderId: message.senderId,
-      message: message.message,
-      timestamp: admin.firestore.FieldValue.serverTimestamp()
-    })
-      .then(() => {
-        console.log('Mensaje guardado en Firestore');
-        // Emitir mensaje a todos los clientes conectados
-        io.emit('message', message);
-      })
-      .catch(error => {
-        console.log('Error al guardar el mensaje en Firestore:', error);
+
+    // Verificar que las propiedades necesarias no estén undefined
+    if (!message || !message.senderId || !message.receiverId || !message.message) {
+      console.log('El mensaje no es válido');
+      return;
+    }
+
+    // Obtener los documentos de conversación relevantes
+    const querySnapshot = await db
+      .collection('conversations')
+      .where('users', 'array-contains', [message.senderId, message.receiverId])
+      .get();
+
+    // Crear un nuevo documento de conversación si no existe uno
+    let conversationDoc;
+    if (querySnapshot.empty) {
+      conversationDoc = db.collection('conversations').doc();
+      await conversationDoc.set({
+        users: [message.senderId, message.receiverId],
+        messages: [],
       });
+      // Get the document snapshot after set
+      conversationDoc = await conversationDoc.get();
+    } else {
+      conversationDoc = querySnapshot.docs[0];
+    }
+
+    // Verificar que el conversationDoc exista antes de llamar a data() en él
+    if (conversationDoc) {
+      // Actualizar el array de "messages" del documento de conversación
+      const conversationData = conversationDoc.data();
+      const conversationMessages = conversationData.messages || [];
+
+      // conversationMessages.push({
+      //   senderId: message.senderId,
+      //   message: message.message,
+      //   timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      // });
+      // await conversationDoc.ref.update({ messages: conversationMessages });
+
+      await conversationDoc.ref.update({
+        messages: admin.firestore.FieldValue.arrayUnion({
+          senderId: message.senderId,
+          receiverId: message.receiverId,
+          message: message.message,
+          timestamp: new Date(), // Use JavaScript timestamp instead of Firestore serverTimestamp
+        }),
+      });
+      
+
+      // Emitir mensaje a todos los clientes conectados
+      io.emit('message', message);
+    } else {
+      console.error('El documento de la conversación no existe');
+    }
   });
 
   socket.on('disconnect', () => {
