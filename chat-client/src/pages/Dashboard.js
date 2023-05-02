@@ -7,6 +7,7 @@ import Chat from "../components/Chat"
 function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [users, setUsers] = useState([]);
+  const [userSelect, setUserSelect] = useState("");
 
   useEffect(() => {
     const getUsers = async () => {
@@ -20,6 +21,11 @@ function Dashboard() {
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const handleUserClick = (user) => {
+    setUserSelect(user);
+    console.log(user, "user")
+  }
 
   return (
     <div className="flex h-screen">
@@ -40,6 +46,7 @@ function Dashboard() {
             <li
               key={user.uid}
               className="py-1 hover:bg-gray-700 cursor-pointer transition duration-300"
+              onClick={() => handleUserClick(user)}
             >
               {user.email}
             </li>
@@ -58,7 +65,14 @@ function Dashboard() {
           <IoIosArrowBack className="w-6 h-6" />
         </button>
         <div>
-          <Chat />
+          {
+            userSelect ? (
+                <Chat userSelect={userSelect} />
+            ) : (
+                <div className="flex justify-center items-center h-full">
+                </div>
+            )
+          }
         </div>
       </div>
     </div>
