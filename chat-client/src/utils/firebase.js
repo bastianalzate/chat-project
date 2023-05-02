@@ -25,3 +25,4 @@ const provider = new GoogleAuthProvider();
 const messagesQuery = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
 export { db, auth, provider, messagesQuery, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword };
+

@@ -1,23 +1,27 @@
-import { IoIosArrowBack } from "react-icons/io";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { db } from "../utils/firebase";
 import { getDocs, collection } from "firebase/firestore";
-import Chat from "../components/Chat"
+import Chat from "../components/Chat";
+import { UserContext } from "../context/UserContext"; // importar UserContext
+import { IoIosArrowBack } from "react-icons/io";
+
 
 function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [users, setUsers] = useState([]);
-  const [userSelect, setUserSelect] = useState("");
-  
+  const [userSelect, setUserSelect] = useState(null);
+  const { user } = useContext(UserContext); // asumiendo que el usuario logueado está en UserContext
 
   useEffect(() => {
     const getUsers = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const usersData = querySnapshot.docs.map((doc) => doc.data());
-      setUsers(usersData);
+      if (user) { // Solo ejecuta este código si 'user' no es null
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const usersData = querySnapshot.docs.map((doc) => doc.data());
+        setUsers(usersData.filter(u => u.uid !== user.uid)); // filtrando los usuarios
+      }
     };
     getUsers();
-  }, []);
+  }, [user]);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -25,8 +29,7 @@ function Dashboard() {
 
   const handleUserClick = (user) => {
     setUserSelect(user);
-    console.log(user, "user")
-  }
+  };
 
   return (
     <div className="flex h-screen">
@@ -66,14 +69,11 @@ function Dashboard() {
           <IoIosArrowBack className="w-6 h-6" />
         </button>
         <div>
-          {
-            userSelect ? (
-                <Chat userSelect={userSelect} />
-            ) : (
-                <div className="flex justify-center items-center h-full">
-                </div>
-            )
-          }
+          {userSelect ? (
+            <Chat userSelect={userSelect} />
+          ) : (
+            <div className="flex justify-center items-center h-full"></div>
+          )}
         </div>
       </div>
     </div>
