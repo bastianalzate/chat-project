@@ -28,6 +28,7 @@ function SignUp() {
                     name: user.displayName,
                     email: user.email,
                     createdAt: new Date(),
+                    uid: user.uid,
                 }, { merge: true });
             }
         } catch (error) {
@@ -55,6 +56,7 @@ function SignUp() {
                     name: name,
                     email: user.email,
                     createdAt: new Date(),
+                    uid: user.uid,
                 }, { merge: true });
             }
 

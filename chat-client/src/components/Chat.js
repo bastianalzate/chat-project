@@ -63,7 +63,7 @@ function Chat({ userSelect }) {
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       <div className="bg-white py-2 px-4 shadow flex items-center justify-between">
-        <h1 className="text-xl font-bold">Chat con {userSelect.name}</h1>
+        <h1 className="text-xl font-bold">Chat con {userSelect.email}</h1>
         <button onClick={handleLogout}>Logout</button>
       </div>
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
