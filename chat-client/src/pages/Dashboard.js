@@ -14,9 +14,11 @@ function Dashboard() {
 
   useEffect(() => {
     const getUsers = async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const usersData = querySnapshot.docs.map((doc) => doc.data());
-      setUsers(usersData.filter(u => u.uid !== user.uid)); // filtrando los usuarios
+      if (user) { // Solo ejecuta este código si 'user' no es null
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const usersData = querySnapshot.docs.map((doc) => doc.data());
+        setUsers(usersData.filter(u => u.uid !== user.uid)); // filtrando los usuarios
+      }
     };
     getUsers();
   }, [user]);

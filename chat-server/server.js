@@ -36,10 +36,13 @@ io.on('connection', socket => {
       return;
     }
 
+    // Crear el par de usuarios en orden alfabético
+    const userPair = [message.senderId, message.receiverId].sort().join('-');
+
     // Obtener los documentos de conversación relevantes
     const querySnapshot = await db
       .collection('conversations')
-      .where('users', 'array-contains', [message.senderId, message.receiverId])
+      .where('userPair', '==', userPair)
       .get();
 
     // Crear un nuevo documento de conversación si no existe uno
@@ -48,6 +51,7 @@ io.on('connection', socket => {
       conversationDoc = db.collection('conversations').doc();
       await conversationDoc.set({
         users: [message.senderId, message.receiverId],
+        userPair: userPair,
         messages: [],
       });
       // Get the document snapshot after set
@@ -62,13 +66,6 @@ io.on('connection', socket => {
       const conversationData = conversationDoc.data();
       const conversationMessages = conversationData.messages || [];
 
-      // conversationMessages.push({
-      //   senderId: message.senderId,
-      //   message: message.message,
-      //   timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      // });
-      // await conversationDoc.ref.update({ messages: conversationMessages });
-
       await conversationDoc.ref.update({
         messages: admin.firestore.FieldValue.arrayUnion({
           senderId: message.senderId,
@@ -77,7 +74,6 @@ io.on('connection', socket => {
           timestamp: new Date(), // Use JavaScript timestamp instead of Firestore serverTimestamp
         }),
       });
-      
 
       // Emitir mensaje a todos los clientes conectados
       io.emit('message', message);
@@ -90,6 +86,7 @@ io.on('connection', socket => {
     console.log('Usuario desconectado');
   });
 });
+
 
 // Permitir solicitudes CORS desde el cliente React
 app.use(cors({ origin: 'http://localhost:3000' }));
