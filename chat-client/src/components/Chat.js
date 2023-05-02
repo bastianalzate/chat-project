@@ -5,11 +5,14 @@ import socket from '../utils/socket';
 import { UserContext } from '../context/UserContext';
 import { useHistory } from 'react-router-dom';
 
-function Chat() {
+function Chat({ userSelect }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const { user, logout } = useContext(UserContext);
   const navigate = useHistory();
+  const testUser = userSelect;
+
+  console.log(testUser, "userSelect")
 
   console.log(user, "dashboard user")
 
@@ -60,14 +63,14 @@ function Chat() {
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       <div className="bg-white py-2 px-4 shadow flex items-center justify-between">
-        <h1 className="text-xl font-bold">Chat con Juan Pérez</h1>
+        <h1 className="text-xl font-bold">Chat con {userSelect.email}</h1>
         <button onClick={handleLogout}>Logout</button>
       </div>
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map(message => (
           message.senderId === user.uid &&
            (
-            <div key={message.id} className="bg-white rounded-lg shadow p-4 mb-4">
+            <div key={message.id} className="bg-white rounded-lg shadow px-4 mb-4">
               <p className="font-bold">{message.senderId}</p>
               <p className="text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
               <p className="mt-2">{message.message}</p>

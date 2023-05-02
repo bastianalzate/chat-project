@@ -2,11 +2,13 @@ import { IoIosArrowBack } from "react-icons/io";
 import React, { useState, useEffect } from "react";
 import { db } from "../utils/firebase";
 import { getDocs, collection } from "firebase/firestore";
-import Chat from "./Chat";
+import Chat from "../components/Chat"
 
-function Sidebar() {
+function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [users, setUsers] = useState([]);
+  const [userSelect, setUserSelect] = useState("");
+  
 
   useEffect(() => {
     const getUsers = async () => {
@@ -20,6 +22,11 @@ function Sidebar() {
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
+
+  const handleUserClick = (user) => {
+    setUserSelect(user);
+    console.log(user, "user")
+  }
 
   return (
     <div className="flex h-screen">
@@ -40,6 +47,7 @@ function Sidebar() {
             <li
               key={user.uid}
               className="py-1 hover:bg-gray-700 cursor-pointer transition duration-300"
+              onClick={() => handleUserClick(user)}
             >
               {user.email}
             </li>
@@ -57,12 +65,19 @@ function Sidebar() {
         >
           <IoIosArrowBack className="w-6 h-6" />
         </button>
-        <div className="p-4">
-          <Chat />
+        <div>
+          {
+            userSelect ? (
+                <Chat userSelect={userSelect} />
+            ) : (
+                <div className="flex justify-center items-center h-full">
+                </div>
+            )
+          }
         </div>
       </div>
     </div>
   );
 }
 
-export default Sidebar;
+export default Dashboard;
