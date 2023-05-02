@@ -6,6 +6,7 @@ import Chat from './components/Chat';
 import Login from './pages/Login';
 import SignUp from './pages/Signup';
 import { UserProvider } from './context/UserContext';
+import UserList from './components/UsersList';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route exact path="/" component={Login} />
         <Route path="/signup" component={SignUp} />
         <Route path="/dashboard" component={Chat} />
+        <Route path="/list" component={UserList} />
         {/* <Route path="/contact" component={Contact} /> */}
         {/* <Route component={NotFound} /> */}
       </Switch>
