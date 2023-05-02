@@ -67,7 +67,7 @@ function Chat() {
         {messages.map(message => (
           message.senderId === user.uid &&
            (
-            <div key={message.id} className="bg-white rounded-lg shadow p-4 mb-4">
+            <div key={message.id} className="bg-white rounded-lg shadow px-4 mb-4">
               <p className="font-bold">{message.senderId}</p>
               <p className="text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
               <p className="mt-2">{message.message}</p>

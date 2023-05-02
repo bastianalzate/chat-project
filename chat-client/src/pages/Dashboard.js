@@ -2,9 +2,9 @@ import { IoIosArrowBack } from "react-icons/io";
 import React, { useState, useEffect } from "react";
 import { db } from "../utils/firebase";
 import { getDocs, collection } from "firebase/firestore";
-import Chat from "./Chat";
+import Chat from "../components/Chat"
 
-function Sidebar() {
+function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [users, setUsers] = useState([]);
 
@@ -57,7 +57,7 @@ function Sidebar() {
         >
           <IoIosArrowBack className="w-6 h-6" />
         </button>
-        <div className="p-4">
+        <div>
           <Chat />
         </div>
       </div>
@@ -65,4 +65,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default Dashboard;
