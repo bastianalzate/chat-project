@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "../utils/firebase";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, onSnapshot } from "firebase/firestore";
 import Chat from "../components/Chat";
 import { UserContext } from "../context/UserContext"; // importar UserContext
 import { IoIosArrowBack } from "react-icons/io";
-
 
 function Dashboard() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -13,14 +12,11 @@ function Dashboard() {
   const { user } = useContext(UserContext); // asumiendo que el usuario logueado está en UserContext
 
   useEffect(() => {
-    const getUsers = async () => {
-      if (user) { // Solo ejecuta este código si 'user' no es null
-        const querySnapshot = await getDocs(collection(db, "users"));
-        const usersData = querySnapshot.docs.map((doc) => doc.data());
-        setUsers(usersData.filter(u => u.uid !== user.uid)); // filtrando los usuarios
-      }
-    };
-    getUsers();
+    const unsubscribe = onSnapshot(collection(db, "users"), (querySnapshot) => {
+      const usersData = querySnapshot.docs.map((doc) => doc.data());
+      setUsers(usersData.filter(u => u.uid !== user.uid));
+    });
+    return () => unsubscribe(); // limpiar suscripción al desmontar componente
   }, [user]);
 
   const toggleSidebar = () => {

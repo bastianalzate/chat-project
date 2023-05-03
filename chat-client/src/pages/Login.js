@@ -1,8 +1,10 @@
 import React, { useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import { auth, provider, signInWithPopup } from "../utils/firebase";
+import { auth, provider, signInWithPopup, db } from "../utils/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+
 
 
 function Login() {
@@ -13,15 +15,32 @@ function Login() {
 
     const signInWithGoogle = () => {
         signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log(result.user,  "user logged in with google");
-                history.push("/dashboard");
-            })
-            .catch((error) => {
-                
-                console.error(error);
-            });
-    };
+          .then(async (result) => {
+            console.log(result.user, "user logged in with google");
+      
+            // Obtén una referencia al documento del usuario en Firestore
+            const userDocRef = doc(db, "users", result.user.uid);
+      
+            // Comprueba si el documento existe
+            const docSnap = await getDoc(userDocRef);
+      
+            // Si el documento no existe, crea uno con la información del usuario
+            if (!docSnap.exists()) {
+              await setDoc(userDocRef, {
+                createdAt: new Date(),
+                email: result.user.email,
+                name: result.user.displayName,
+                uid: result.user.uid,
+              });
+            }
+      
+            // Después de la comprobación y posible creación, redirige al dashboard
+            history.push("/dashboard");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      };
 
     const handleLogin = async (event) => {
         event.preventDefault();
