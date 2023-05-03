@@ -27,10 +27,10 @@ function Chat({ userSelect }) {
     const getConversation = () => {
       // Crear el par de usuarios en orden alfabético
       const userPair = [user.uid, userSelect.uid].sort().join('-');
-  
+
       const conversationCollection = collection(db, 'conversations');
       const q = query(conversationCollection, where('userPair', '==', userPair));
-  
+
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         if (querySnapshot.empty) {
           setMessages([]);
@@ -40,27 +40,27 @@ function Chat({ userSelect }) {
           console.log(conversation.messages)
         }
       });
-  
+
       // La función onSnapshot retorna una función unsubscribe
       // que puedes llamar para cancelar la suscripción.
       return unsubscribe;
     };
-  
+
     // Llama a getConversation y guarda la función unsubscribe
     const unsubscribe = getConversation();
-  
+
     return () => {
       // Cancela la suscripción cuando el componente se desmonte
       unsubscribe();
     };
   }, [user, userSelect]);
-  
+
 
   useEffect(scrollToBottom, [messages]);
 
   const handleSend = e => {
     e.preventDefault();
-  
+
     const newMessage = {
       senderId: user.uid,
       receiverId: userSelect.uid,
@@ -70,7 +70,7 @@ function Chat({ userSelect }) {
     socket.emit('message', newMessage);
     setMessage('');
   };
-  
+
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
@@ -80,13 +80,24 @@ function Chat({ userSelect }) {
       </div>
       <div className="p-4 flex-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
         {messages.map((message, index) => (
-          <div key={index} className="bg-white rounded-lg shadow px-4 mb-4">
-            <p className="font-bold">{message.senderId === user.uid ? "Yo" : userSelect.email}</p>
-            <p className="text-gray-500">{new Date(message.timestamp?.toDate()).toLocaleString()}</p>
-            <p className="mt-2">{message.message}</p>
+          <div
+            key={index}
+            className={`grid grid-cols-1 mb-4 ${
+              message.senderId === user.uid ? "justify-self-end" : "justify-self-start"
+            }`}
+          >
+            <div
+              className={`rounded-lg shadow px-4 py-2 ${
+                message.senderId === user.uid ? "bg-gray-300 text-right" : "bg-white"
+              }`}
+            >
+              <p className="font-bold">{message.senderId === user.uid ? "Yo" : userSelect.email}</p>
+              <p className="text-gray-500">{new Date(message.timestamp?.toDate()).toLocaleString()}</p>
+              <p className="mt-2">{message.message}</p>
+            </div>
           </div>
         ))}
-
+  
         <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSend} className="bg-white py-5 px-4 shadow">
@@ -103,6 +114,8 @@ function Chat({ userSelect }) {
       </form>
     </div>
   );
+  
+
 }
 
 export default Chat;
