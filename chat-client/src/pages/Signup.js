@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { auth, provider, signInWithPopup, createUserWithEmailAndPassword } from "../utils/firebase";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+
 
 
 function SignUp() {
@@ -9,6 +10,7 @@ function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const history = useHistory();
 
     const handleGoogleSignUp = async () => {
         try {
@@ -30,6 +32,8 @@ function SignUp() {
                     createdAt: new Date(),
                     uid: user.uid,
                 }, { merge: true });
+
+                history.push('/dashboard'); // Redirigir al usuario a la página de dashboard
             }
         } catch (error) {
             console.error("Error al iniciar sesión con Google: ", error);
@@ -58,6 +62,8 @@ function SignUp() {
                     createdAt: new Date(),
                     uid: user.uid,
                 }, { merge: true });
+
+                history.push('/dashboard'); // Redirigir al usuario a la página de dashboard
             }
 
         } catch (error) {
